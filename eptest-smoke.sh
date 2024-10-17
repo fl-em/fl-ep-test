@@ -21,29 +21,25 @@ adddate() {
         printf '%s %s\n' "$(date)" "$line";
     done }
 errch() {
-    local output_message="$1"
-    if echo "$output_message" | grep -iq -e "$errval" -e "$errval2"; then
+    status=$?
+    if [ $status != 0 ]; then
         echo $ts "Error encountered. Check the log for details."
-        exit 1
     fi
 }
 eptest() {
     echo "Testing $1..."
     echo
     echo "Uploading sample file..."
-    outul=$(aws s3 --endpoint=$2$1 --profile $3 cp $file s3://$bucket 2>&1)
-    echo "$ts-$outul" >> $logfile
-    errch "$outul"
+    aws s3 --endpoint=$2$1 --profile $3 cp $file s3://$bucket 2>&1
+    errch
     echo
     echo "Downloading sample file..."
-    outdl=$(aws s3 --endpoint=$2$1 --profile $3 cp s3://$bucket/$file $file 2>&1)
-    echo "$ts-$outul" >> $logfile
-    errch "$outdl"
+    aws s3 --endpoint=$2$1 --profile $3 cp s3://$bucket/$file $file 2>&1
+    errch
     echo
     echo "Deleting sample file from bucket..."
-    outdel=$(aws s3 --endpoint=$2$1 --profile $3 rm s3://$bucket/$file 2>&1)
-    echo "$ts-$outdel" >> $logfile
-    errch "$outdel"
+    aws s3 --endpoint=$2$1 --profile $3 rm s3://$bucket/$file 2>&1
+    errch
     echo
 }
 echo
