@@ -22,6 +22,7 @@ adddate() {
     done }
 errch() {
     status=$?
+    echo $status
     if [ $status != 0 ]; then
         echo $ts "Error encountered. Check the log for details."
     fi
